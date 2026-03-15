@@ -245,12 +245,6 @@ const tbl = document.getElementById('schedule');
         else this.classList.remove('selected');
       });
 
-      td.addEventListener('click', function(e){
-        // Fallback for plain clicks (no drag)
-        if(dragging) return;
-        this.classList.toggle('selected');
-      });
-
       row.appendChild(td);
     });
     tbl.appendChild(row);
