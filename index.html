@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hi Conner!</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+    background:#0f0f0f;
+    color:#e0e0e0;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:2rem 1rem 4rem;
+  }
+  h1{
+    font-size:2.8rem;
+    font-weight:700;
+    letter-spacing:-0.03em;
+    background:linear-gradient(135deg,#6ee7b7,#3b82f6);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    margin-bottom:2rem;
+  }
+  .table-wrap{
+    overflow-x:auto;
+    border-radius:12px;
+    box-shadow:0 4px 24px rgba(0,0,0,.4);
+    margin-bottom:1.5rem;
+    max-width:100%;
+  }
+  table{
+    border-collapse:collapse;
+    background:#1a1a1a;
+    min-width:600px;
+    width:100%;
+  }
+  th,td{
+    padding:.55rem .7rem;
+    text-align:center;
+    font-size:.85rem;
+    border:1px solid #2a2a2a;
+    white-space:nowrap;
+  }
+  th{
+    background:#1e1e1e;
+    font-weight:600;
+    color:#a0a0a0;
+    text-transform:uppercase;
+    font-size:.75rem;
+    letter-spacing:.06em;
+    position:sticky;
+    top:0;
+  }
+  th:first-child{
+    text-align:right;
+    padding-right:1rem;
+  }
+  td.time-label{
+    text-align:right;
+    padding-right:1rem;
+    font-variant-numeric:tabular-nums;
+    color:#888;
+    font-size:.8rem;
+    cursor:default;
+    background:#1a1a1a;
+  }
+  td.slot{
+    cursor:pointer;
+    background:#1e1e1e;
+    transition:background .15s,box-shadow .15s;
+    user-select:none;
+    -webkit-user-select:none;
+    position:relative;
+    min-width:80px;
+  }
+  td.slot:hover{
+    background:#2a2a2a;
+    box-shadow:inset 0 0 0 2px #3b82f6;
+  }
+  td.slot.selected{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+  }
+  td.slot.selected:hover{
+    background:linear-gradient(135deg,#3b82f6,#2563eb);
+    box-shadow:inset 0 0 0 2px #60a5fa;
+  }
+  td.slot.selected::after{
+    content:'✓';
+    font-size:.75rem;
+    opacity:.7;
+  }
+  .option-btns{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.6rem;
+    margin-bottom:1.8rem;
+    justify-content:center;
+    max-width:700px;
+  }
+  .option-btn{
+    padding:.6rem 1.1rem;
+    border-radius:8px;
+    border:1px solid #333;
+    background:#1a1a1a;
+    color:#aaa;
+    font-size:.82rem;
+    cursor:pointer;
+    transition:all .2s;
+  }
+  .option-btn:hover{
+    border-color:#555;
+    color:#ccc;
+  }
+  .option-btn.active{
+    border-color:#3b82f6;
+    background:#1e293b;
+    color:#93c5fd;
+  }
+  .generate-btn{
+    padding:.9rem 2.8rem;
+    font-size:1.15rem;
+    font-weight:600;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(135deg,#3b82f6,#2563eb);
+    color:#fff;
+    cursor:pointer;
+    transition:transform .15s,box-shadow .15s;
+    box-shadow:0 4px 16px rgba(59,130,246,.3);
+    margin-bottom:1.5rem;
+    letter-spacing:-.01em;
+  }
+  .generate-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 6px 24px rgba(59,130,246,.45);
+  }
+  .generate-btn:active{
+    transform:translateY(0);
+  }
+  #output{
+    max-width:600px;
+    width:100%;
+    display:none;
+  }
+  .message-box{
+    background:#1a1a1a;
+    border:1px solid #2a2a2a;
+    border-radius:10px;
+    padding:1.4rem 1.6rem;
+    white-space:pre-wrap;
+    font-size:.92rem;
+    line-height:1.7;
+    color:#d0d0d0;
+    margin-bottom:.8rem;
+  }
+  .copy-btn{
+    padding:.55rem 1.4rem;
+    font-size:.85rem;
+    font-weight:500;
+    border:1px solid #333;
+    border-radius:8px;
+    background:#1a1a1a;
+    color:#93c5fd;
+    cursor:pointer;
+    transition:all .2s;
+  }
+  .copy-btn:hover{
+    border-color:#3b82f6;
+    background:#1e293b;
+  }
+  .warning{
+    color:#f87171;
+    font-size:.9rem;
+    margin-bottom:1rem;
+  }
+  @media(max-width:640px){
+    h1{font-size:2rem}
+    body{padding:1.2rem .5rem 3rem}
+    td.slot{min-width:56px}
+    th,td{padding:.45rem .35rem;font-size:.75rem}
+  }
+</style>
+</head>
+<body>
+
+<h1>Hi Conner!</h1>
+
+<div class="table-wrap">
+  <table id="schedule"></table>
+</div>
+
+<div class="option-btns">
+  <button class="option-btn" data-idx="0">Sorry that our schedule is a bit tight next week.</button>
+  <button class="option-btn" data-idx="1">Hope we can do two sessions!</button>
+</div>
+
+<button class="generate-btn" onclick="generate()">Hi Conner</button>
+
+<div id="output">
+  <div class="message-box" id="msg"></div>
+  <button class="copy-btn" id="copyBtn" onclick="copyMsg()">Copy to Clipboard</button>
+</div>
+
+<script>
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+const START = 9, END = 16.5, STEP = 0.5;
+const slots = [];
+
+function fmt(h){
+  const hh = Math.floor(h);
+  const mm = h % 1 === 0 ? '00' : '30';
+  return `${hh}:${mm}`;
+}
+
+// Build table
+(function(){
+  const t = document.getElementById('schedule');
+  const hdr = document.createElement('tr');
+  hdr.innerHTML = '<th></th>' + DAYS.map(d => `<th>${d}</th>`).join('');
+  t.appendChild(hdr);
+
+  for(let h = START; h < END; h += STEP){
+    const row = document.createElement('tr');
+    row.innerHTML = `<td class="time-label">${fmt(h)}\u2009–\u2009${fmt(h+STEP)}</td>`;
+    DAYS.forEach((d, di) => {
+      const td = document.createElement('td');
+      td.className = 'slot';
+      td.dataset.day = di;
+      td.dataset.start = h;
+      td.addEventListener('click', () => td.classList.toggle('selected'));
+      row.appendChild(td);
+    });
+    t.appendChild(row);
+  }
+})();
+
+// Option buttons toggle
+document.querySelectorAll('.option-btn').forEach(b => {
+  b.addEventListener('click', () => b.classList.toggle('active'));
+});
+
+function generate(){
+  const sel = {};
+  document.querySelectorAll('td.slot.selected').forEach(td => {
+    const di = +td.dataset.day;
+    const s = +td.dataset.start;
+    if(!sel[di]) sel[di] = [];
+    sel[di].push(s);
+  });
+
+  const out = document.getElementById('output');
+  const msg = document.getElementById('msg');
+
+  if(Object.keys(sel).length === 0){
+    out.style.display = 'block';
+    msg.innerHTML = '<span class="warning">Please select at least one time slot.</span>';
+    document.getElementById('copyBtn').style.display = 'none';
+    return;
+  }
+  document.getElementById('copyBtn').style.display = '';
+
+  let lines = ['Hi Conner, our availability next week is as follows:',''];
+
+  for(let di = 0; di < DAYS.length; di++){
+    if(!sel[di]) continue;
+    const times = sel[di].sort((a,b) => a - b);
+    // merge consecutive
+    const ranges = [];
+    let rs = times[0], re = times[0] + STEP;
+    for(let i = 1; i < times.length; i++){
+      if(times[i] === re) re = times[i] + STEP;
+      else { ranges.push([rs, re]); rs = times[i]; re = times[i] + STEP; }
+    }
+    ranges.push([rs, re]);
+
+    const parts = ranges.map(r => `${fmt(r[0])}-${fmt(r[1])}`);
+    let joined;
+    if(parts.length === 1) joined = parts[0];
+    else if(parts.length === 2) joined = parts[0] + ' and ' + parts[1];
+    else joined = parts.slice(0,-1).join(', ') + ', and ' + parts[parts.length-1];
+
+    lines.push(`${DAYS[di]}: ${joined}`);
+  }
+
+  lines.push('');
+
+  // optional sentences
+  const optBtns = document.querySelectorAll('.option-btn');
+  const extras = [];
+  if(optBtns[0].classList.contains('active')) extras.push(optBtns[0].textContent);
+  if(optBtns[1].classList.contains('active')) extras.push(optBtns[1].textContent);
+  if(extras.length) lines.push(extras.join(' '));
+  if(extras.length) lines.push('');
+
+  lines.push('Best,');
+  lines.push('Shota');
+
+  out.style.display = 'block';
+  msg.textContent = lines.join('\n');
+}
+
+function copyMsg(){
+  const text = document.getElementById('msg').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+  });
+}
+</script>
+</body>
+</html>
