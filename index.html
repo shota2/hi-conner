@@ -172,9 +172,16 @@
   }
   @media(max-width:640px){
     h1{font-size:2rem}
-    body{padding:1.2rem .5rem 3rem}
-    td.slot{min-width:56px}
-    th,td{padding:.45rem .35rem;font-size:.75rem}
+    body{padding:1rem .25rem 3rem}
+    table{min-width:0;width:100%}
+    td.slot{min-width:0}
+    th,td{padding:.35rem .2rem;font-size:.65rem}
+    td.time-label{font-size:.6rem;padding-right:.3rem}
+    td.slot.selected::after{font-size:.7rem}
+    .option-btns{gap:.5rem}
+    .option-btn{padding:.6rem .8rem;font-size:.8rem}
+    .generate-btn{padding:.9rem 2.5rem;font-size:1.2rem}
+    .copy-btn{padding:.6rem 1.2rem;font-size:.9rem}
   }
 </style>
 </head>
