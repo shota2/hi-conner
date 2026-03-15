@@ -218,6 +218,11 @@ function fmt(h){
   return `${hh}:${mm}`;
 }
 
+// Drag-select state
+let dragging = false;
+let dragMode = null; // 'select' or 'deselect'
+let dragCol = null;  // lock to the column where drag started
+
 // Build table
 (function(){
   const t = document.getElementById('schedule');
@@ -233,12 +238,52 @@ function fmt(h){
       td.className = 'slot';
       td.dataset.day = di;
       td.dataset.start = h;
-      td.addEventListener('click', () => td.classList.toggle('selected'));
       row.appendChild(td);
     });
     t.appendChild(row);
   }
 })();
+
+// Mouse drag-select
+document.addEventListener('mousedown', e => {
+  const td = e.target.closest('td.slot');
+  if(!td) return;
+  e.preventDefault();
+  dragging = true;
+  dragCol = td.dataset.day;
+  dragMode = td.classList.contains('selected') ? 'deselect' : 'select';
+  td.classList.toggle('selected', dragMode === 'select');
+});
+
+document.addEventListener('mousemove', e => {
+  if(!dragging) return;
+  const td = e.target.closest('td.slot');
+  if(!td || td.dataset.day !== dragCol) return;
+  td.classList.toggle('selected', dragMode === 'select');
+});
+
+document.addEventListener('mouseup', () => { dragging = false; });
+
+// Touch drag-select
+document.addEventListener('touchstart', e => {
+  const td = e.target.closest('td.slot');
+  if(!td) return;
+  e.preventDefault();
+  dragging = true;
+  dragCol = td.dataset.day;
+  dragMode = td.classList.contains('selected') ? 'deselect' : 'select';
+  td.classList.toggle('selected', dragMode === 'select');
+}, {passive: false});
+
+document.addEventListener('touchmove', e => {
+  if(!dragging) return;
+  const touch = e.touches[0];
+  const td = document.elementFromPoint(touch.clientX, touch.clientY);
+  if(!td || !td.classList.contains('slot') || td.dataset.day !== dragCol) return;
+  td.classList.toggle('selected', dragMode === 'select');
+}, {passive: false});
+
+document.addEventListener('touchend', () => { dragging = false; });
 
 // Option buttons toggle
 document.querySelectorAll('.option-btn').forEach(b => {
