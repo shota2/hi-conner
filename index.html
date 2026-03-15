@@ -223,12 +223,25 @@ let dragging = false;
 let dragMode = null; // 'select' or 'deselect'
 let dragCol = null;  // lock to the column where drag started
 
+function getSlot(x, y){
+  const el = document.elementFromPoint(x, y);
+  if(el && el.classList && el.classList.contains('slot')) return el;
+  if(el) { const p = el.closest('td.slot'); if(p) return p; }
+  return null;
+}
+
+function applySlot(td){
+  if(!td || td.dataset.day !== dragCol) return;
+  if(dragMode === 'select') td.classList.add('selected');
+  else td.classList.remove('selected');
+}
+
 // Build table
+const tbl = document.getElementById('schedule');
 (function(){
-  const t = document.getElementById('schedule');
   const hdr = document.createElement('tr');
   hdr.innerHTML = '<th></th>' + DAYS.map(d => `<th>${d}</th>`).join('');
-  t.appendChild(hdr);
+  tbl.appendChild(hdr);
 
   for(let h = START; h < END; h += STEP){
     const row = document.createElement('tr');
@@ -240,50 +253,51 @@ let dragCol = null;  // lock to the column where drag started
       td.dataset.start = h;
       row.appendChild(td);
     });
-    t.appendChild(row);
+    tbl.appendChild(row);
   }
 })();
 
 // Mouse drag-select
-document.addEventListener('mousedown', e => {
-  const td = e.target.closest('td.slot');
+tbl.addEventListener('mousedown', function(e){
+  const td = getSlot(e.clientX, e.clientY);
   if(!td) return;
   e.preventDefault();
   dragging = true;
   dragCol = td.dataset.day;
   dragMode = td.classList.contains('selected') ? 'deselect' : 'select';
-  td.classList.toggle('selected', dragMode === 'select');
+  applySlot(td);
 });
 
-document.addEventListener('mousemove', e => {
+window.addEventListener('mousemove', function(e){
   if(!dragging) return;
-  const td = e.target.closest('td.slot');
-  if(!td || td.dataset.day !== dragCol) return;
-  td.classList.toggle('selected', dragMode === 'select');
+  e.preventDefault();
+  const td = getSlot(e.clientX, e.clientY);
+  if(td) applySlot(td);
 });
 
-document.addEventListener('mouseup', () => { dragging = false; });
+window.addEventListener('mouseup', function(){ dragging = false; });
 
 // Touch drag-select
-document.addEventListener('touchstart', e => {
-  const td = e.target.closest('td.slot');
+tbl.addEventListener('touchstart', function(e){
+  const t = e.touches[0];
+  const td = getSlot(t.clientX, t.clientY);
   if(!td) return;
   e.preventDefault();
   dragging = true;
   dragCol = td.dataset.day;
   dragMode = td.classList.contains('selected') ? 'deselect' : 'select';
-  td.classList.toggle('selected', dragMode === 'select');
+  applySlot(td);
 }, {passive: false});
 
-document.addEventListener('touchmove', e => {
+window.addEventListener('touchmove', function(e){
   if(!dragging) return;
-  const touch = e.touches[0];
-  const td = document.elementFromPoint(touch.clientX, touch.clientY);
-  if(!td || !td.classList.contains('slot') || td.dataset.day !== dragCol) return;
-  td.classList.toggle('selected', dragMode === 'select');
+  e.preventDefault();
+  const t = e.touches[0];
+  const td = getSlot(t.clientX, t.clientY);
+  if(td) applySlot(td);
 }, {passive: false});
 
-document.addEventListener('touchend', () => { dragging = false; });
+window.addEventListener('touchend', function(){ dragging = false; });
 
 // Option buttons toggle
 document.querySelectorAll('.option-btn').forEach(b => {
